@@ -6,6 +6,7 @@ from mysql.connector import Error
 
 
 class MemoListResource(Resource):
+    # 메모 생성
     @jwt_required()
     def post(self):
 
@@ -41,16 +42,28 @@ class MemoListResource(Resource):
         return {"result":"success"}, 200
     
 
-
+    # 내 메모 리스트 가져오기
+    @jwt_required()
     def get(self):
+
+        user_id = get_jwt_identity()
+
+        # 쿼리 스트링 (쿼리 파라미터) 데이터를 받아온다.
+        offset = request.args.get('offset')
+        limit = request.args.get('limit')
+        
 
         try:
             connection = get_connection()
-            query = '''select *
-                    from memo_list;'''
+            query = '''select id, title, date, content
+                    from memo_list
+                    where userId = %s
+                    order by date
+                    limit '''+str(offset)+''', '''+str(limit)+''';'''
+            record = (user_id, )
             
             cursor = connection.cursor(dictionary=True)
-            cursor.execute(query)
+            cursor.execute(query, record)
 
             result_list = cursor.fetchall()
 
@@ -58,10 +71,7 @@ class MemoListResource(Resource):
             i = 0
             for row in result_list :
                 result_list[i]['date'] = row['date'].isoformat()
-                result_list[i]['createdAt'] = row['createdAt'].isoformat()
-                result_list[i]['updatedAt'] = row['updatedAt'].isoformat()
                 i = i + 1 
-
 
             cursor.close()
             connection.close()
@@ -80,6 +90,7 @@ class MemoListResource(Resource):
 
 
 class MemoResource(Resource):
+    # 메모 삭제
     @jwt_required()
     def delete(self, memo_id):
         
@@ -108,6 +119,7 @@ class MemoResource(Resource):
         return {"result":"success"}, 200
     
 
+    # 메모 수정
     @jwt_required()
     def put(self, memo_id):
         

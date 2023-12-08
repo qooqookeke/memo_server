@@ -10,6 +10,7 @@ from utils import check_password, hash_password
 
 
 class UserRegisterResource(Resource):
+    # 회원 가입
     def post(self):
 
         data = request.get_json()
@@ -56,6 +57,7 @@ class UserRegisterResource(Resource):
     
 
 class UserLoginResource(Resource):
+    # 로그인
     def post(self):
 
         data = request.get_json()
@@ -99,6 +101,7 @@ class UserLoginResource(Resource):
 jwt_blocklist = set()
 
 class UserLogoutResource(Resource):
+    # 로그아웃
     @jwt_required()
     def delete(self):
 
