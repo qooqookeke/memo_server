@@ -112,3 +112,5 @@ class UserLogoutResource(Resource):
 
 
         return {"result":"로그아웃 완료입니다."}, 200
+    
+
